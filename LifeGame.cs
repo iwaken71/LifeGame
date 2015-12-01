@@ -21,7 +21,6 @@ public class LifeGame : MonoBehaviour {
 		cell = GameObject.CreatePrimitive(PrimitiveType.Cube);
 		//cell.transform.localScale = Vector3.one * 0.90f;
 		cell.GetComponent<Renderer> ().material.color = deathColor;
-		cell.tag = "Cell";
 		_camera = Camera.main;
 		if (Size != null) {
 			N = Size;
@@ -46,12 +45,12 @@ public class LifeGame : MonoBehaviour {
 		cameraObj.transform.eulerAngles = new Vector3 (90,0,0); //カメラ位置調整
 		CreateText (); //Text生成
 	}
+	
 	void Update () {
 		if (game) {
 			timer += Time.deltaTime;
 			if (timer > interval) {
-				Action (); // シミュレーション
-				Draw (); //描画
+				Action (); // ライフゲームアルゴリズム
 				timer = 0;
 			}
 		} else {
@@ -63,29 +62,27 @@ public class LifeGame : MonoBehaviour {
 			StartButton ();
 		}if (Input.GetKeyDown (KeyCode.Z)) {
 			SetLife ((int)(N/2),(int)(N/2));
-			Draw ();
 		}if (Input.GetKeyDown (KeyCode.C)) {
 			Clear();
-			Draw ();
 		}
+		Draw (); //描画
 	}
 	void Click(){
 		Vector3 center = new Vector3 (Screen.width/2,Screen.height/2,0);
 		Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 		RaycastHit hit;
 		if (Physics.Raycast (ray, out hit, 10000)) {
-			if (hit.collider.tag == "Cell") {
-				int x = (int)hit.collider.transform.position.x;
-				int z = (int)hit.collider.transform.position.z;
-				// 情報を更新
-				if (board [x, z] == 0) {
-					board [x, z] = 1;
-				}else if(board [x, z] == 1){
-					board [x, z] = 1;
-				}
+			
+			int x = (int)hit.collider.transform.position.x;
+			int z = (int)hit.collider.transform.position.z;
+			// 情報を更新
+			if (board [x, z] == 0) {
+				board [x, z] = 1;
+			}else if(board [x, z] == 1){
+				board [x, z] = 1;
 			}
+			
 		}
-		Draw(); //描画
 	}
 	//描画メソッド
 	void Draw(){
@@ -107,12 +104,11 @@ public class LifeGame : MonoBehaviour {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				board [i, j] = 0;
-				_renderer [i, j].material.color = deathColor;
 			}
 		}
 	}
 	
-	// 一回一回のシミュレーション
+	// ライフゲームアルゴリズム
 	void Action(){
 		int[,] board2 = new int[N,N];
 		for (int i = 0; i < N; i++) {
